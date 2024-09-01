@@ -1,0 +1,52 @@
+Name: build-and-release
+SchemaVersion: "1.0"
+Triggers:
+  - Type: PUSH
+    Branches:
+      - main
+Compute:
+  Type: EC2
+  Fleet: Linux.x86-64.Large
+Actions:
+  build_for_default_environment:
+    Identifier: aws/build@v1
+    Inputs:
+      Sources:
+        - WorkflowSource
+    Outputs:
+      AutoDiscoverReports:
+        Enabled: true
+        ReportNamePrefix: rpt
+      Artifacts:
+        - Name: build_result
+          Files:
+            - "**/*"
+    Configuration:
+      Steps:
+        - Run: . ./.codecatalyst/scripts/bootstrap.sh
+        - Run: . ./.codecatalyst/scripts/run-tests.sh
+        - Run: sam build --template-file template.yaml --use-container --build-image public.ecr.aws/sam/build-python3.9:$(sam --version | sed "s/.* //")
+        - Run: cd .aws-sam/build/
+        - Run: sam package --output-template-file packaged.yaml --resolve-s3 --template-file template.yaml --region us-west-2
+    Environment:
+      Name: default_environment
+      Connections:
+        - Name: "205930619414"
+          Role: CodeCatalystWorkflowDevelopmentRole-python_dev_center
+  deploy_to_default_environment:
+    Identifier: aws/cfn-deploy@v1
+    Inputs:
+      Artifacts:
+        - build_result
+    Environment:
+      Name: default_environment
+      Connections:
+        - Name: "205930619414"
+          Role: CodeCatalystWorkflowDevelopmentRole-python_dev_center
+    Configuration:
+      Parameters:
+        region: us-west-2
+        name: sam-stack-x3her
+        template: .aws-sam/build/packaged.yaml
+        no-fail-on-empty-changeset: "1"
+        capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND

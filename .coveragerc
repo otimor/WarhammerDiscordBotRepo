@@ -1,0 +1,2 @@
+[run]
+omit = WarhammerDiscordBot/tests/integration/*

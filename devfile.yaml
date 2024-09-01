@@ -1,0 +1,33 @@
+schemaVersion: 2.0.0
+metadata:
+  name: aws-universal
+  version: 1.0.1
+  displayName: AWS Universal
+  description: Stack with AWS Universal Tooling
+  tags:
+    - aws
+    - a12
+  projectType: aws
+components:
+  - name: aws-runtime
+    container:
+      image: public.ecr.aws/aws-mde/universal-image:3.0
+      mountSources: true
+      volumeMounts:
+        - name: docker-store
+          path: /var/lib/docker
+  - name: docker-store
+    volume:
+      size: 16Gi
+events:
+  postStart:
+    - bootstrap-and-build
+commands:
+  - id: bootstrap-and-build
+    exec:
+      commandLine: . ./.codecatalyst/scripts/bootstrap.sh && .
+        ./.codecatalyst/scripts/run-tests.sh && sam build --template-file
+        template.yaml --use-container --build-image
+        public.ecr.aws/sam/build-python3.9:$(sam --version | sed "s/.* //")
+      workingDir: $PROJECT_SOURCE
+      component: aws-runtime

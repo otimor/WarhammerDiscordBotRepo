@@ -1,0 +1,53 @@
+# The following workflow is intentionally disabled by the blueprint author to prevent project contributors from accidentally executing it.
+# This workflow will attempt to delete all the deployed resources from the blueprint.
+# The deletion action cannot be undone, please proceed at your own risk.
+# To utilize it, please uncomment all the succeeding lines.
+# Name: DANGER-hard-delete-deployed-resources
+# SchemaVersion: "1.0"
+# Triggers: []
+# Actions:
+#   delete_sam_stack_x3her:
+#     Identifier: aws/build@v1
+#     Configuration:
+#       Steps:
+#         - Run: stack_name=sam-stack-x3her
+#         - Run: region=us-west-2
+#         - Run: "cfn_template_upload_bucket=tmp-cleanup-workflow-diukbk5artqb3roixf174uoobe29nj4k # we need an S3 bucket to temporarily host the updated cloudformation template because template-body has a max length of 51,200 bytes which may not be enough in some cases"
+#         - Run: echo 'Update existing cloudformation template to change resources deletion policy to "Delete", and set deletion policy for S3 buckets and Elastic Container Registry to "Retain" which will be manually cleaned up later.'
+#         - Run: pip install cfn-flip
+#         - Run: aws cloudformation get-template --stack-name $stack_name --region $region > existing-template-$stack_name.json
+#         - Run: jq -r '.TemplateBody' ./existing-template-$stack_name.json | cfn-flip -o json > ./existing-template-body-$stack_name.json
+#         - Run: jq 'if .Resources? then (.Resources[]? | select(.Type != "AWS::S3::Bucket" and .Type != "AWS::ECR::Repository") | select(.DeletionPolicy!=null) | .DeletionPolicy) = "Delete" else . end' ./existing-template-body-$stack_name.json > ./temporary-template-body-$stack_name.json
+#         - Run: jq 'if .Resources? then (.Resources[]? | select(.Type == "AWS::S3::Bucket" or .Type == "AWS::ECR::Repository")) |= (.DeletionPolicy = "Retain") else . end' ./temporary-template-body-$stack_name.json > ./updated-template-$stack_name.json
+#         - Run: echo 'Create a temporary S3 bucket to host the updated cloudformation template, and this will be cleaned up afterwards.'
+#         - Run: aws s3api create-bucket --bucket $cfn_template_upload_bucket --region $region --create-bucket-configuration LocationConstraint=$region || true
+#         - Run: echo 'Update the cloudformation stack and wait for the status to no longer be "UPDATE_IN_PROGRESS" , ignoring the case when it needs not be updated.'
+#         - Run: aws s3 cp ./updated-template-$stack_name.json s3://$cfn_template_upload_bucket/updated-template-$stack_name.json --region $region
+#         - Run: aws cloudformation update-stack --stack-name $stack_name --region $region --template-url https://s3.amazonaws.com/$cfn_template_upload_bucket/updated-template-$stack_name.json --capabilities CAPABILITY_NAMED_IAM || true
+#         - Run: timeout 300 bash -c 'while true; do status=$(aws cloudformation describe-stacks --stack-name "$stack_name" --region $region --query "Stacks[0].StackStatus" --output text); if [[ "$status" == "UPDATE_IN_PROGRESS" ]]; then sleep 10; else break; fi; done'
+#         - Run: echo 'Store the list of associated S3 buckets and Elastic Container Registries'
+#         - Run: BUCKET_NAMES=$(aws cloudformation list-stack-resources --stack-name $stack_name --region $region | jq -r '.StackResourceSummaries[] | select(.ResourceType=="AWS::S3::Bucket") | .PhysicalResourceId')
+#         - Run: ECR_NAMES=$(aws cloudformation list-stack-resources --stack-name $stack_name --region $region | jq -r '.StackResourceSummaries[] | select(.ResourceType=="AWS::ECR::Repository") | .PhysicalResourceId')
+#         - Run: USER_POOLS=$(aws cloudformation list-stack-resources --stack-name $stack_name --region $region | jq -r '.StackResourceSummaries[] | select(.ResourceType=="AWS::Cognito::UserPool") | .PhysicalResourceId')
+#         - Run: for USER_POOL in $USER_POOLS; do aws cognito-idp describe-user-pool --user-pool-id $USER_POOL --region $region > /dev/null 2>&1 && aws cognito-idp delete-user-pool --user-pool-id $USER_POOL --region $region || true; done
+#         - Run: echo 'Initiate cloudformation delete-stack command and wait for completion.'
+#         - Run: aws cloudformation delete-stack --stack-name $stack_name --region $region
+#         - Run: aws cloudformation wait stack-delete-complete --stack-name $stack_name --region $region
+#         - Run: echo 'Cloudformation stack deletion completed.'
+#         - Run: echo 'Clean up and delete all associated S3 buckets, including the temporary bucket created. If versioning is enabled, delete all markers and versions as well.'
+#         - Run: "for BUCKET_NAME in $BUCKET_NAMES; do if aws s3api head-bucket --bucket $BUCKET_NAME --region $region > /dev/null 2>&1; then if aws s3api get-bucket-versioning --bucket $BUCKET_NAME --region $region | grep -q '\"Status\": \"Enabled\"'; then aws s3api delete-objects --bucket $BUCKET_NAME --region $region  --delete \"$(aws s3api list-object-versions --bucket $BUCKET_NAME --region $region  --query='{Objects: Versions[].{Key:Key,VersionId:VersionId}}')\";aws s3api delete-objects --bucket $BUCKET_NAME --region $region  --delete \"$(aws s3api list-object-versions --bucket $BUCKET_NAME --region $region  --query='{Objects: DeleteMarkers[].{Key:Key,VersionId:VersionId}}')\";fi;aws s3 rb --force s3://$BUCKET_NAME --region $region;fi;done"
+#         - Run: aws s3 rb --force s3://$cfn_template_upload_bucket --region $region
+#         - Run: echo 'All S3 buckets cleaned up.'
+#         - Run: echo 'Clean up and delete all associated Elastic Container Registries.'
+#         - Run: for ECR_NAME in $ECR_NAMES; do aws ecr describe-repositories --repository-name $ECR_NAME --region $region > /dev/null 2>&1 && aws ecr delete-repository --repository-name $ECR_NAME --region $region --force || true; done
+#         - Run: echo 'All Elastic Container Registries cleaned up. '
+#         - Run: echo 'Cleanup action is now completed.'
+#     Environment:
+#       Name: default_environment
+#       Connections:
+#         - Name: "205930619414"
+#           Role: CodeCatalystWorkflowDevelopmentRole-python_dev_center
+# Compute:
+#   Type: EC2
+#   Fleet: Linux.x86-64.Large
+# 
