@@ -10,8 +10,15 @@ def lambda_handler(event, context):
     try:
         body = json.loads(event['body'])
 
-        signature = event['headers']['x-signature-ed25519']
-        timestamp = event['headers']['x-signature-timestamp']
+        try:
+            signature = event['headers']['x-signature-ed25519']
+            timestamp = event['headers']['x-signature-timestamp']
+        except KeyError:
+            return {
+                'statusCode': 401,
+                'body': json.dumps('invalid request signature')
+            }
+
 
         # validate the interaction
 
