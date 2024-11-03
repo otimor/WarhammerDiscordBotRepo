@@ -33,9 +33,7 @@ Outputs:
   WarhammerDiscordBotApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
     Value: !Sub "https://${proxyGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/WarhammerDiscordBot/"
-  WarhammerDiscordBotFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt WarhammerDiscordBotFunction.Arn
+
   WarhammerDiscordBotFunctionIamRole:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt WarhammerDiscordBotFunctionRole.Arn
