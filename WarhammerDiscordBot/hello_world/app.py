@@ -1,42 +1,70 @@
 import json
 
-# import requests
+from nacl.signing import VerifyKey
+from nacl.exceptions import BadSignatureError
+
+PUBLIC_KEY = '8327fc9706afcfc96f72c1c0010b13e6af4f6d1c3b61dfd48d867270501525ca'
 
 
 def lambda_handler(event, context):
-    """Sample pure Lambda function
+    try:
+        body = json.loads(event['body'])
 
-    Parameters
-    ----------
-    event: dict, required
-        API Gateway Lambda Proxy Input Format
+        signature = event['headers']['x-signature-ed25519']
+        timestamp = event['headers']['x-signature-timestamp']
 
-        Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
+        # validate the interaction
 
-    context: object, required
-        Lambda Context runtime methods and attributes
+        verify_key = VerifyKey(bytes.fromhex(PUBLIC_KEY))
 
-        Context doc: https://docs.aws.amazon.com/lambda/latest/dg/python-context-object.html
+        message = timestamp + event['body']
 
-    Returns
-    ------
-    API Gateway Lambda Proxy Output Format: dict
+        try:
+            verify_key.verify(message.encode(), signature=bytes.fromhex(signature))
+        except BadSignatureError:
+            return {
+                'statusCode': 401,
+                'body': json.dumps('invalid request signature')
+            }
 
-        Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
-    """
+        # handle the interaction
+        #refactor t to be more readable, wna whta is types?
+        t = body['type']
 
-    # try:
-    #     ip = requests.get("http://checkip.amazonaws.com/")
-    # except requests.RequestException as e:
-    #     # Send some context about this error to Lambda Logs
-    #     print(e)
+        if t == 1:
+            return {
+                'statusCode': 200,
+                'body': json.dumps({
+                    'type': 1
+                })
+            }
+        elif t == 2:
+            return command_handler(body)
+        else:
+            return {
+                'statusCode': 400,
+                'body': json.dumps('unhandled request type')
+            }
+    except:
+        raise
 
-    #     raise e
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
-            "message": "hello world",
-            # "location": ip.text.replace("\n", "")
-        }),
-    }
+def command_handler(body):
+    command = body['data']['name']
+
+    if command == 'hello':
+        return {
+            'statusCode': 200,
+            'headers': {'Content-Type': 'application/json'},
+            'body': json.dumps({
+                'type': 4,
+                'data': {
+                    'content': 'Hello, World from CodeCatalyst AWS hello',
+                }
+            })
+        }
+    else:
+        return {
+            'statusCode': 400,
+            'body': json.dumps('unhandled command')
+        }
