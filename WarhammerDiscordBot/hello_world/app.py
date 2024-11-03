@@ -63,6 +63,17 @@ def command_handler(body):
                 }
             })
         }
+    elif command == 'test':
+        return {
+            'statusCode': 200,
+            'headers': {'Content-Type': 'application/json'},
+            'body': json.dumps({
+                'type': 4,
+                'data': {
+                    'content': 'Test successful',
+                }
+            })
+        }
     else:
         return {
             'statusCode': 400,
