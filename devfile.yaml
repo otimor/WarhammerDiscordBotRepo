@@ -28,6 +28,6 @@ commands:
       commandLine: . ./.codecatalyst/scripts/bootstrap.sh && .
         ./.codecatalyst/scripts/run-tests.sh && sam build --template-file
         template.yaml --use-container --build-image
-        public.ecr.aws/sam/build-python3.9:$(sam --version | sed "s/.* //")
+        public.ecr.aws/sam/build-python3.11:$(sam --version | sed "s/.* //")
       workingDir: $PROJECT_SOURCE
       component: aws-runtime
