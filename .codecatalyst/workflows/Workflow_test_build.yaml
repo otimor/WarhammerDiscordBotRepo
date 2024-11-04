@@ -36,7 +36,7 @@ Actions:
         - Run: . ./.codecatalyst/scripts/run-tests.sh
         - Run: sam build --template-file template.yaml --use-container --build-image public.ecr.aws/sam/build-python3.11:$(sam --version | sed "s/.* //")
         - Run: cd .aws-sam/build/
-        - Run: sam package --output-template-file packaged.yaml --resolve-s3 --template-file template.yaml --region eu-west-1
+        - Run: sam package --output-template-file packaged.yaml --resolve-s3 --template-file template.yaml --region us-west-2
     Environment:
       Name: TEST
       Connections:
