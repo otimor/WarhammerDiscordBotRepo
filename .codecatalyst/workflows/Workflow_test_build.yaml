@@ -41,6 +41,6 @@ Actions:
       Name: TEST
       Connections:
         - Name: "205930619414"
-          Role: CodeCatalystWorkflowDevelopmentRole-python_dev_center
+          Role: CodeCatalystWorkflowDevelopmentRole-PythonDevSpace
     Compute:
       Type: EC2
