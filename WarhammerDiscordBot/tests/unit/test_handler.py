@@ -61,6 +61,24 @@ def apigw_event():
     }
 
 
+@pytest.fixture()
+def apigw_event():
+    return {
+  "body": "{\"type\": 1}",
+  "headers": {
+    "x-signature-ed25519": "your_signature_here",
+    "x-signature-timestamp": "your_timestamp_here"
+  },
+  "httpMethod": "POST",
+  "path": "/WarhammerDiscordBot",
+  "queryStringParameters": {},
+  "requestContext": {
+    "resourcePath": "/WarhammerDiscordBot",
+    "httpMethod": "POST",
+    "path": "/Prod/WarhammerDiscordBot"
+  }
+}
+
 def test_lambda_handler(apigw_event):
 
     ret = app.lambda_handler(apigw_event, "")
