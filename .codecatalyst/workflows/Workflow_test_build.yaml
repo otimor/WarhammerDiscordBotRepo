@@ -12,7 +12,7 @@ Triggers:
 
 # Required - Define action configurations.
 Actions:
-  Build_ea:
+  Build_for_test_environment:
     # Identifies the action. Do not modify this value.
     Identifier: aws/build@v1.0.0
     Inputs:
@@ -24,10 +24,16 @@ Actions:
         Enabled: true
         # Use as prefix for the report files
         ReportNamePrefix: rpt
+      Artifacts:
+        - Name: build_result
+          Files:
+            - "**/*"
     # Defines the action's properties.
     Configuration:
       # Required - Steps are sequential instructions that run shell commands
       Steps:
+        - Run: . ./.codecatalyst/scripts/bootstrap.sh
+        - Run: . ./.codecatalyst/scripts/run-tests.sh
         - Run: echo "Hello, World!"
         - Run: echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" >> report.xml
         - Run: echo "<testsuite tests=\"1\" name=\"TestAgentJunit\" >" >> report.xml
