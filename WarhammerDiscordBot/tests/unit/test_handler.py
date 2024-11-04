@@ -62,7 +62,7 @@ def apigw_event():
 
 
 @pytest.fixture()
-def apigw_event():
+def apigw_signed_event():
     return {
   "body": "{\"type\": 1}",
   "headers": {
