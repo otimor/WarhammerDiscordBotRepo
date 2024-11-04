@@ -34,13 +34,13 @@ Actions:
       Steps:
         - Run: . ./.codecatalyst/scripts/bootstrap.sh
         - Run: . ./.codecatalyst/scripts/run-tests.sh
-        - Run: echo "Hello, World!"
-        - Run: echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" >> report.xml
-        - Run: echo "<testsuite tests=\"1\" name=\"TestAgentJunit\" >" >> report.xml
-        - Run: echo "<testcase classname=\"TestAgentJunit\" name=\"Dummy
-            Test\"/></testsuite>" >> report.xml
-      Container:
-        Registry: CODECATALYST
-        Image: CodeCatalystLinux_x86_64:2024_03
+        - Run: sam build --template-file template.yaml --use-container --build-image public.ecr.aws/sam/build-python3.11:$(sam --version | sed "s/.* //")
+        - Run: cd .aws-sam/build/
+        - Run: sam package --output-template-file packaged.yaml --resolve-s3 --template-file template.yaml --region eu-west-1
+    Environment:
+      Name: TEST
+      Connections:
+        - Name: "205930619414"
+          Role: CodeCatalystWorkflowDevelopmentRole-python_dev_center
     Compute:
       Type: EC2
