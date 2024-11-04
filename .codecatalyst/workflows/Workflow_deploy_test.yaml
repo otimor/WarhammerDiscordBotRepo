@@ -1,0 +1,31 @@
+Name: Workflow_d654
+SchemaVersion: "1.0"
+
+# Optional - Set automatic triggers.
+Triggers:
+  - Type: Push
+    Branches:
+      - ProxyGatewayForDiscordBot
+
+# Required - Define action configurations.
+Actions:
+  deploy_to_test_environment:
+    Identifier: aws/cfn-deploy@v1
+    Inputs:
+      Artifacts:
+        - build_result
+    Environment:
+      Name: TEST
+      Connections:
+        - Name: "205930619414"
+          Role: CodeCatalystWorkflowDevelopmentRole-PythonDevSpace
+    # Specifies the source and/or artifacts to pass to the action as input.
+    Configuration:
+      Parameters:
+        region: eu-west-1
+        name: sam-stack-x3her
+        template: .aws-sam/build/packaged.yaml
+        no-fail-on-empty-changeset: "1"
+        capabilities: CAPABILITY_IAM,CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND
+
+  
