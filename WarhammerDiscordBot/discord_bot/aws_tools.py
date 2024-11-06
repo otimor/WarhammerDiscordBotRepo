@@ -1,0 +1,21 @@
+import boto3
+import json
+
+def get_sns_topic_arn(parameter_name=None):
+    client = boto3.client('sns')
+    response = client.list_topics(NextToken='string')
+    if parameter_name is None:
+        return response['Topics'][0]['TopicArn']
+    for topic in response['Topics']:
+        if topic['TopicArn'].endswith(parameter_name):
+            return topic['TopicArn']
+    return None
+
+def get_secret(secret_name='discord-app-public-key'):
+    #TODO: write function to get the public key from AWS Secrets
+    PUBLIC_KEY = '8327fc9706afcfc96f72c1c0010b13e6af4f6d1c3b61dfd48d867270501525ca'
+    client = boto3.client('secretsmanager')
+    response = client.get_secret_value(SecretId=secret_name)
+    secret = json.loads(response['SecretString'])
+    #return secret
+    return PUBLIC_KEY
