@@ -26,6 +26,27 @@ Resources:
                 Path: /WarhammerDiscordBot/
                 Method: post
                 RestApiId: !Ref proxyGateway
+
+  commandFunctionHello:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: WarhammerDiscordBot/commands/
+      Runtime: python3.11
+      Handler: app.command_handler
+      Description: function responding with hello command for WarhammerDiscordBot
+      Events:
+          "SNSEvent": {
+          "Type": "SNS",
+          "Properties": {
+            "Topic": {
+              "Ref": "MainSNSTopic"
+            },
+            "FilterPolicy": {
+              "command": [
+                "hello"
+              ]
+            }
+          }
 Outputs:
 # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
 # Find out more about other implicit resources you can reference within SAM
