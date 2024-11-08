@@ -2,16 +2,20 @@ import json
 import boto3
 from auth import DiscordBotAuthorizer
 from aws_tools import get_sns_topic_arn, get_secret
+import logging as log
+
+log.basicConfig(level=log.DEBUG)
 
 def check_if_test_call(body):
     if 'X-Test' in body['headers'] and body['headers']['X-Test'] == 'ping':
+        log.info("Test call received")
         return True
     return False
 
 def lambda_handler(event, context):
 
     try:
-        public_key = get_secret()
+
         body = json.loads(event['body'])
         if check_if_test_call(body):
             return {
@@ -19,10 +23,13 @@ def lambda_handler(event, context):
                 'body': json.dumps('test successful')
             }
         try:
+            public_key = get_secret()
             signature = event['headers']['x-signature-ed25519']
             timestamp = event['headers']['x-signature-timestamp']
+            log.debug("Auth begin")
             authorizer = DiscordBotAuthorizer(public_key)
             authenticated, reason = authorizer.validate(signature, timestamp, event['body'])
+            log.debug("Auth end: results: %s, %s",authenticated,reason)
         except KeyError:
             return {
                 'statusCode': 401,
@@ -41,6 +48,7 @@ def lambda_handler(event, context):
                     })
                 }
             elif t == 2:
+                log.info("Processing command received")
                 return command_handler(body)
             else:
                 return {
@@ -54,6 +62,8 @@ def command_handler(body):
     # Handle command (send to SNS and split to one of Lambdas)
     if 'name' in body['data']:
         event_text = json.dumps(body, indent=2)
+        log.debug(f"Command received: {event_text}")
+
         params = {
             'Message': event_text,
             'Subject': "Test SNS From Lambda",
@@ -65,6 +75,7 @@ def command_handler(body):
                 }
             }
         }
+        log.debug(f'Sending message to SNS: {params}')
         # Create promise and SNS service object
         sns = boto3.client('sns', api_version='2010-03-31')
         sns.publish(**params)

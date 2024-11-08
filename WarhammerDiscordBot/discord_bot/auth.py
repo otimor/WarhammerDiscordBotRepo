@@ -2,6 +2,9 @@
 
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
+import logging as log
+
+log.basicConfig(level=log.DEBUG)
 
 class DiscordBotAuthorizer:
     def __init__(self, public_key):
@@ -9,12 +12,12 @@ class DiscordBotAuthorizer:
 
     def validate(self, signature, timestamp, body):
         verify_key = VerifyKey(bytes.fromhex(self.public_key))
-
         message = timestamp + body
-
+        log.debug("Validating message: %s", message)
         try:
             verify_key.verify(message.encode(), signature=bytes.fromhex(signature))
         except BadSignatureError:
             return False, 'invalid request signature'
 
-        return True
+        log.debug("Message validated, succesfully")
+        return True, 'valid request signature'
