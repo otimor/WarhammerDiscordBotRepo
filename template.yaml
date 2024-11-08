@@ -15,7 +15,7 @@ Resources:
   proxyFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: WarhammerDiscordBot/hello_world/
+      CodeUri: WarhammerDiscordBot/discord_bot/
       Runtime: python3.11
       Handler: app.lambda_handler
       Description: function to dispatch commands for WarhammerDiscordBot
@@ -30,9 +30,9 @@ Resources:
   commandFunctionHello:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: WarhammerDiscordBot/commands/
+      CodeUri: WarhammerDiscordBot/discord_bot/
       Runtime: python3.11
-      Handler: app.command_handler
+      Handler: command_handler.command_handler
       Description: function responding with hello command for WarhammerDiscordBot
       Events:
           "SNSEvent": {
