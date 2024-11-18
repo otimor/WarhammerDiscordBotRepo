@@ -33,9 +33,9 @@ Resources:
       Policies:
         ## Read more about SAM Policy templates at:
         ## https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
-        - SNSPublishMessagePolicy:
+        - SNSPublishMessagePolicy: {}
             #TopicName: !GetAtt MainSnsTopic.TopicName
-            TopicName: MainSnsTopic
+            #TopicName: MainSnsTopic
       Events:
           WarhammerDiscordBot:
              Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
