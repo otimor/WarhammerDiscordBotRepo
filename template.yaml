@@ -5,11 +5,11 @@ Globals:
     Timeout: 20
 
 Resources:
-  MainSNSTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      DisplayName: MainSNSTopic
-      TopicName: MainSNSTopic
+#  MainSNSTopic:
+#    Type: AWS::SNS::Topic
+#    Properties:
+#      DisplayName: MainSNSTopic
+#      TopicName: MainSNSTopic
 
   proxyGateway:
     Type: AWS::Serverless::Api
@@ -28,12 +28,14 @@ Resources:
       Description: function to dispatch commands for WarhammerDiscordBot
       Environment:
         Variables:
-          SNStopic: !Ref MainSnsTopic
+          #SNStopic: !Ref MainSnsTopic
+          SNStopic: MainSnsTopic
       Policies:
         ## Read more about SAM Policy templates at:
         ## https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
         - SNSPublishMessagePolicy:
-            TopicName: !GetAtt MainSnsTopic.TopicName
+            #TopicName: !GetAtt MainSnsTopic.TopicName
+            TopicName: MainSnsTopic
       Events:
           WarhammerDiscordBot:
              Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -42,7 +44,7 @@ Resources:
                 Method: post
                 RestApiId: !Ref proxyGateway
 
-  commandFunctionHello:
+    commandFunctionHello:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: WarhammerDiscordBot/discord_bot/
@@ -53,7 +55,8 @@ Resources:
           SNSEvent:
             Type: SNS
             Properties:
-              Topic: !Ref MainSNSTopic
+              #Topic: !Ref MainSNSTopic
+              Topic: MainSNSTopic
               FilterPolicy: {
                 "command": [
                   "hello"
