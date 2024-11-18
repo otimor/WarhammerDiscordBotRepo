@@ -3,6 +3,7 @@ Description: lambdas
 Globals:
   Function:
     Timeout: 20
+
 Resources:
   MainSNSTopic:
     Type: AWS::SNS::Topic
@@ -67,13 +68,13 @@ Outputs:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
     Value: !Sub "https://${proxyGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/WarhammerDiscordBot/"
 
-  SNStopicName:
-    Description: SNS topic name
-    Value: !GetAtt MainSnsTopic.TopicName
+#  SNStopicName:
+#    Description: SNS topic name
+#    Value: !GetAtt MainSnsTopic.TopicName
 
-  SNStopicARN:
-    Description: SNS topic ARN
-    Value: !Ref MainSnsTopic
+#  SNStopicARN:
+#    Description: SNS topic ARN
+#    Value: !Ref MainSnsTopic
 
   #WarhammerDiscordBotFunctionIamRole:
   #  Description: "Implicit IAM Role created for Hello World function"
