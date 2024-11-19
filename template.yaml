@@ -5,11 +5,12 @@ Globals:
     Timeout: 20
 
 Resources:
-#  MainSNSTopic:
-#    Type: AWS::SNS::Topic
-#    Properties:
-#      DisplayName: MainSNSTopic
-#      TopicName: MainSNSTopic
+  MainSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: MainSNSTopicName
+      DeliveryStatusLogging:
+        Protocol: lambda
 
   proxyGateway:
     Type: AWS::Serverless::Api
@@ -28,13 +29,12 @@ Resources:
       Description: function to dispatch commands for WarhammerDiscordBot
       Environment:
         Variables:
-          #SNStopic: !Ref MainSnsTopic
-          SNStopic: MainSnsTopic
+          SNStopic: !Ref MainSnsTopic
       Policies:
         ## Read more about SAM Policy templates at:
         ## https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
-        - SNSPublishMessagePolicy: {}
-            #TopicName: !GetAtt MainSnsTopic.TopicName
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt MainSnsTopic.TopicName
             #TopicName: MainSnsTopic
       Events:
           WarhammerDiscordBot:
@@ -55,8 +55,7 @@ Resources:
           SNSEvent:
             Type: SNS
             Properties:
-              #Topic: !Ref MainSNSTopic
-              Topic: MainSNSTopic
+              Topic: !Ref MainSNSTopic
               FilterPolicy: {
                 "command": [
                   "hello"
@@ -71,13 +70,13 @@ Outputs:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
     Value: !Sub "https://${proxyGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/WarhammerDiscordBot/"
 
-#  SNStopicName:
-#    Description: SNS topic name
-#    Value: !GetAtt MainSnsTopic.TopicName
+  SNStopicName:
+    Description: SNS topic name
+    Value: !GetAtt MainSnsTopic.TopicName
 
-#  SNStopicARN:
-#    Description: SNS topic ARN
-#    Value: !Ref MainSnsTopic
+  SNStopicARN:
+    Description: SNS topic ARN
+    Value: !Ref MainSnsTopic
 
   #WarhammerDiscordBotFunctionIamRole:
   #  Description: "Implicit IAM Role created for Hello World function"
