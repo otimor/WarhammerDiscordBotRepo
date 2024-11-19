@@ -9,8 +9,6 @@ Resources:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: MainSNSTopicName
-      DeliveryStatusLogging:
-        Protocol: lambda
 
   proxyGateway:
     Type: AWS::Serverless::Api
