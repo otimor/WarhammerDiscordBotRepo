@@ -27,14 +27,11 @@ Resources:
       Runtime: python3.11
       Handler: app.lambda_handler
       Description: function to dispatch commands for WarhammerDiscordBot
-      Environment:
-        Variables:
-          SNStopic: !Ref MainSnsTopic
       Policies:
         ## Read more about SAM Policy templates at:
         ## https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
         - SNSPublishMessagePolicy:
-            TopicName: !GetAtt SnsTopic.TopicName
+            TopicName: !GetAtt MainSNSTopic.TopicName
             #TopicName: MainSnsTopic
       Events:
           WarhammerDiscordBot:
@@ -72,11 +69,11 @@ Outputs:
 
   SNStopicName:
     Description: SNS topic name
-    Value: !GetAtt MainSnsTopic.TopicName
+    Value: !GetAtt MainSNSTopic.TopicName
 
   SNStopicARN:
     Description: SNS topic ARN
-    Value: !Ref MainSnsTopic
+    Value: !Ref MainSNSTopic
 
   #WarhammerDiscordBotFunctionIamRole:
   #  Description: "Implicit IAM Role created for Hello World function"
