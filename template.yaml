@@ -37,6 +37,7 @@ Resources:
         ## Read more about SAM Policy templates at:
         ## https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
         - AWSLambdaBasicExecutionRole
+        - AWSXrayWriteOnlyAccess
         - SNSPublishMessagePolicy:
             TopicName: !GetAtt MainSNSTopic.TopicName
         #- AWSSecretsManagerGetSecretValuePolicy:
@@ -73,6 +74,7 @@ Resources:
         ## Read more about SAM Policy templates at:
         ## https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
         - AWSLambdaBasicExecutionRole
+        - AWSXrayWriteOnlyAccess
 
 Outputs:
 # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

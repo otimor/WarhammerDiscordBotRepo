@@ -42,6 +42,7 @@ def lambda_handler(event, context):
             log.debug(f"Auth end: results: {authenticated},{reason}")
 
         except KeyError:
+            log.error("Invalid request signature, missing headers")
             return {
                 'statusCode': 401,
                 'body': json.dumps('DHBError: invalid request signature')
@@ -51,7 +52,7 @@ def lambda_handler(event, context):
             # refactor t to be more readable, wna whta is types?
 
             message_type = body['type']
-
+            log.debug(f"Processing message type: {message_type}")
             if message_type == discord_message_types['PING']: #t == 1:
                 log.info("Received ping, responding with pong")
                 return {
