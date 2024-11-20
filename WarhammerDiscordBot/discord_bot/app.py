@@ -49,6 +49,7 @@ def lambda_handler(event, context):
             message_type = body['type']
 
             if message_type == discord_message_types['PING']: #t == 1:
+                log.info("Received ping, reposnding with pong")
                 return {
                     'statusCode': 200,
                     'body': json.dumps({
