@@ -6,8 +6,8 @@ import logging as log
 
 log.basicConfig(level=log.DEBUG)
 
-def check_if_test_call(body):
-    if 'X-Test' in body['headers'] and body['headers']['X-Test'] == 'ping':
+def check_if_test_call(event):
+    if 'X-Test' in event['headers'] and event['headers']['X-Test'] == 'ping':
         log.info("Test call received")
         return True
     return False
@@ -17,7 +17,7 @@ def lambda_handler(event, context):
     try:
 
         body = json.loads(event['body'])
-        if check_if_test_call(body):
+        if check_if_test_call(event):
             return {
                 'statusCode': 200,
                 'body': json.dumps('test successful')
