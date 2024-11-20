@@ -15,7 +15,8 @@ def check_if_test_call(event):
 def lambda_handler(event, context):
 
     try:
-
+        log.info(f"Received call to proxyGateway")
+        log.debug(f"Headers: {event['headers']} Event: {event}")
         body = json.loads(event['body'])
         if check_if_test_call(event):
             return {
