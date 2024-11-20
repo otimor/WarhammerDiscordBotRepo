@@ -7,7 +7,11 @@ import logging
 #log.basicConfig(level=log.DEBUG)
 log = logging.getLogger()
 log.setLevel("DEBUG")
-discord_message_types = enumerate(['PING', 'APPLICATION_COMMAND', 'MESSAGE_COMPONENT', 'MESSAGE'])
+discord_message_types = {'PING':1,
+                         'APPLICATION_COMMAND':2,
+                         'MESSAGE_COMPONENT':3,
+                         'MESSAGE':4,
+                         'PONG':1}
 def check_if_test_call(event):
     if 'x-test' in event['headers'] and event['headers']['x-test'] == 'ping':
         log.info("Test call received")
@@ -49,17 +53,18 @@ def lambda_handler(event, context):
             message_type = body['type']
 
             if message_type == discord_message_types['PING']: #t == 1:
-                log.info("Received ping, reposnding with pong")
+                log.info("Received ping, responding with pong")
                 return {
                     'statusCode': 200,
                     'body': json.dumps({
-                        'type': 1
+                        'type': discord_message_types['PONG']
                     })
                 }
             elif message_type == discord_message_types['APPLICATION_COMMAND']: #t == 2:
                 log.info("Processing command received")
                 return command_handler(body)
             else:
+                log.error(f"Unhandled request type: {message_type}")
                 return {
                     'statusCode': 400,
                     'body': json.dumps('DHBError: unhandled request type')
@@ -92,7 +97,7 @@ def command_handler(body):
         return {
             'statusCode': 200,
             'body': json.dumps({
-                "type": 4,
+                "type": discord_message_types['MESSAGE'],
                 "data": {"content": "*⏳ Loading...*"}
             })
         }
