@@ -10,13 +10,13 @@ Resources:
     Properties:
       TopicName: MainSNSTopicName
 
-  proxyGateway:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: Prod
-      MethodSettings:
-        - ResourcePath: /
-          HttpMethod: ANY
+  #proxyGateway:
+  #  Type: AWS::Serverless::Api
+  #  Properties:
+  #    StageName: Prod
+  #    MethodSettings:
+  #      - ResourcePath: /
+  #        HttpMethod: ANY
 
   proxyFunction:
     Type: AWS::Serverless::Function
@@ -32,12 +32,13 @@ Resources:
             TopicName: !GetAtt MainSNSTopic.TopicName
             #TopicName: MainSnsTopic
       Events:
-          WarhammerDiscordBot:
+          proxyGateway:
+          #WarhammerDiscordBot:
              Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
              Properties:
                 Path: /WarhammerDiscordBot/
                 Method: post
-                RestApiId: !Ref proxyGateway
+                #RestApiId: !Ref proxyGateway
 
     commandFunctionHello:
     Type: AWS::Serverless::Function
