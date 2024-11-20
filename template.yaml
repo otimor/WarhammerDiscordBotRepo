@@ -40,7 +40,7 @@ Resources:
                 Method: ANY
                 #RestApiId: !Ref proxyGateway
 
-    commandFunctionHello:
+  commandFunctionHello:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: WarhammerDiscordBot/discord_bot/
