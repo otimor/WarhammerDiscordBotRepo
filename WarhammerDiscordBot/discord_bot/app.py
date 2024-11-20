@@ -23,16 +23,18 @@ def lambda_handler(event, context):
     try:
         log.info(f"Received call to proxyGateway")
         log.debug(f"Headers: {event['headers']} Event: {event}")
-        body = json.loads(event['body'])
+
         if check_if_test_call(event):
             return {
                 'statusCode': 200,
                 'body': json.dumps('test successful')
             }
+
         try:
             public_key = get_secret()
             signature = event['headers']['x-signature-ed25519']
             timestamp = event['headers']['x-signature-timestamp']
+            body = json.loads(event['body'])
             log.debug("Auth begin")
             authorizer = DiscordBotAuthorizer(public_key)
             authenticated, reason = authorizer.validate(signature=signature,
