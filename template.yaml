@@ -48,6 +48,9 @@ Resources:
                 Path: /WarhammerDiscordBot/
                 Method: ANY
                 RestApiId: !Ref proxyGateway
+      Environment:
+        Variables:
+          TOPIC_ARN: !Ref MainSNSTopic
 
   commandFunctionHello:
     Type: AWS::Serverless::Function
@@ -66,6 +69,10 @@ Resources:
                   "hello"
                 ]
               }
+      Policies:
+        ## Read more about SAM Policy templates at:
+        ## https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
+        - AWSLambdaBasicExecutionRole
 
 Outputs:
 # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -73,7 +80,7 @@ Outputs:
 # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   WarhammerDiscordBotApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${proxyGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/WarhammerDiscordBot/"
+    Value: !Sub "https://${proxyGateway}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/WarhammerDiscordBot/"
 
   SNStopicName:
     Description: SNS topic name
