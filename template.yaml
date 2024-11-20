@@ -4,6 +4,14 @@ Globals:
   Function:
     Timeout: 20
 
+Parameters:
+  StageName:
+    Type: String
+    Description: Stage Name used in API GW
+    Default: Prod
+
+
+
 Resources:
   MainSNSTopic:
     Type: AWS::SNS::Topic
@@ -28,8 +36,11 @@ Resources:
       Policies:
         ## Read more about SAM Policy templates at:
         ## https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
+        - AWSLambdaBasicExecutionRole
         - SNSPublishMessagePolicy:
             TopicName: !GetAtt MainSNSTopic.TopicName
+        #- AWSSecretsManagerGetSecretValuePolicy:
+        #    SecretArn: !Ref DiscordBotSecret
       Events:
           WarhammerDiscordBotApi:
              Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
