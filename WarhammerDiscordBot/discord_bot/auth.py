@@ -10,12 +10,13 @@ log = logging.getLogger()
 
 class DiscordBotAuthorizer:
     def __init__(self, public_key):
-        self.public_key = public_key
+        self.public_key = bytes.fromhex(public_key)
 
     def validate(self, signature, timestamp, body):
-        verify_key = VerifyKey(bytes.fromhex(self.public_key))
+        log.debug(f'Verifying {signature} with timestamp {timestamp} body: {body}')
+        verify_key = VerifyKey(self.public_key)
         message = timestamp + body
-        log.debug("Validating message: %s", message)
+        log.debug(f'Validating message: {message}')
         try:
             verify_key.verify(message.encode(), signature=bytes.fromhex(signature))
         except BadSignatureError:

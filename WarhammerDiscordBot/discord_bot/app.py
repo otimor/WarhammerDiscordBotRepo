@@ -7,9 +7,9 @@ import logging
 #log.basicConfig(level=log.DEBUG)
 log = logging.getLogger()
 log.setLevel("DEBUG")
-
+discord_message_types = enumerate(['PING', 'APPLICATION_COMMAND', 'MESSAGE_COMPONENT', 'MESSAGE'])
 def check_if_test_call(event):
-    if 'X-Test' in event['headers'] and event['headers']['X-Test'] == 'ping':
+    if 'x-test' in event['headers'] and event['headers']['x-test'] == 'ping':
         log.info("Test call received")
         return True
     return False
@@ -31,8 +31,12 @@ def lambda_handler(event, context):
             timestamp = event['headers']['x-signature-timestamp']
             log.debug("Auth begin")
             authorizer = DiscordBotAuthorizer(public_key)
-            authenticated, reason = authorizer.validate(signature, timestamp, event['body'])
-            log.debug("Auth end: results: %s, %s",authenticated,reason)
+            authenticated, reason = authorizer.validate(signature=signature,
+                                                        timestamp=timestamp,
+                                                        body=event['body'])
+
+            log.debug(f"Auth end: results: {authenticated},{reason}")
+
         except KeyError:
             return {
                 'statusCode': 401,
@@ -41,16 +45,17 @@ def lambda_handler(event, context):
 
             # handle the interaction
             # refactor t to be more readable, wna whta is types?
-            t = body['type']
 
-            if t == 1:
+            message_type = body['type']
+
+            if message_type == discord_message_types['PING']: #t == 1:
                 return {
                     'statusCode': 200,
                     'body': json.dumps({
                         'type': 1
                     })
                 }
-            elif t == 2:
+            elif message_type == discord_message_types['APPLICATION_COMMAND']: #t == 2:
                 log.info("Processing command received")
                 return command_handler(body)
             else:
