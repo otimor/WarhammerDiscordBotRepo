@@ -2,9 +2,11 @@ import json
 import boto3
 from auth import DiscordBotAuthorizer
 from aws_tools import get_sns_topic_arn, get_secret
-import logging as log
+import logging
 
-log.basicConfig(level=log.DEBUG)
+#log.basicConfig(level=log.DEBUG)
+log = logging.getLogger()
+log.setLevel("DEBUG")
 
 def check_if_test_call(event):
     if 'X-Test' in event['headers'] and event['headers']['X-Test'] == 'ping':
@@ -34,7 +36,7 @@ def lambda_handler(event, context):
         except KeyError:
             return {
                 'statusCode': 401,
-                'body': json.dumps('invalid request signature')
+                'body': json.dumps('DHBError: invalid request signature')
             }
 
             # handle the interaction
@@ -54,7 +56,7 @@ def lambda_handler(event, context):
             else:
                 return {
                     'statusCode': 400,
-                    'body': json.dumps('unhandled request type')
+                    'body': json.dumps('DHBError: unhandled request type')
                 }
     except:
         raise

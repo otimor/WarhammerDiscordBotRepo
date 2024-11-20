@@ -2,9 +2,11 @@
 
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
-import logging as log
+import logging
 
-log.basicConfig(level=log.DEBUG)
+#log.basicConfig(level=log.DEBUG)
+log = logging.getLogger()
+#log.setLevel("DEBUG")
 
 class DiscordBotAuthorizer:
     def __init__(self, public_key):
