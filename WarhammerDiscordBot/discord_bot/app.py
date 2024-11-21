@@ -51,8 +51,6 @@ def lambda_handler(event, context):
             }
 
             # handle the interaction
-            # refactor t to be more readable, wna whta is types?
-
             message_type = body['type']
             log.debug(f"Processing message type: {message_type}")
             if message_type == discord_message_types['PING']: #t == 1:

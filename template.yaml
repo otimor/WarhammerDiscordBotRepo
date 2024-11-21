@@ -23,7 +23,7 @@ Resources:
     Properties:
       StageName: Prod
       MethodSettings:
-        - ResourcePath: /
+        - ResourcePath: /{proxy+}
           HttpMethod: ANY
 
   proxyFunction:
