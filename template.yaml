@@ -22,17 +22,13 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
-      Cors:
+      Cors: "'*'"
         #To be secured with a whitelist of allowed origins: discord.com, discordapp.com, discord.gg
-        AllowHeaders: "'*'"
-        AllowMethods: "'*'"
-        AllowOrigins: "'*'"
+        #Allowing all origins is a security risk
       MethodSettings:
         - ResourcePath: /{proxy+}
         - HttpMethod: ANY
-        - MetricsEnabled: true
-        - Type: AWS_PROXY
-        - IntegrationHttpMethod: POST
+
 
   proxyFunction:
     Type: AWS::Serverless::Function
@@ -83,7 +79,6 @@ Resources:
         ## https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
         - AWSLambdaBasicExecutionRole
         - AWSXrayWriteOnlyAccess
-
 Outputs:
 # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
 # Find out more about other implicit resources you can reference within SAM
