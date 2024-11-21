@@ -24,7 +24,10 @@ Resources:
       StageName: Prod
       MethodSettings:
         - ResourcePath: /{proxy+}
-          HttpMethod: ANY
+        - HttpMethod: ANY
+        - MetricsEnabled: true
+        - Type: AWS_PROXY
+        - IntegrationHttpMethod: POST
 
   proxyFunction:
     Type: AWS::Serverless::Function
