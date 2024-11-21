@@ -22,6 +22,11 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
+      Cors:
+        #To be secured with a whitelist of allowed origins: discord.com, discordapp.com, discord.gg
+        AllowHeaders: "'*'"
+        AllowMethods: "'*'"
+        AllowOrigins: "'*'"
       MethodSettings:
         - ResourcePath: /{proxy+}
         - HttpMethod: ANY
