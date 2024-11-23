@@ -28,6 +28,11 @@ Resources:
       MethodSettings:
         - ResourcePath: /{proxy+}
         - HttpMethod: ANY
+      Policies:
+        - AWSXrayTracing
+        - AmazonAPIGatewayPushToCloudWatchLogs
+        #role_arn: arn:aws:iam::205930619414:role/whbot-apigateway-write-logs
+        #role !GetAtt whbot-apigateway-write-logsRole.arn
 
 
   proxyFunction:
