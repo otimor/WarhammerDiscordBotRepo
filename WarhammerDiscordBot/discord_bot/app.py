@@ -7,11 +7,12 @@ import os
 
 
 #log.basicConfig(level=log.DEBUG)
-log = logging.getLogger()
+
 #log.setLevel("DEBUG")
 log_format = '%(asctime)s - %(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s'
 #log_format = '%(name)s - %(funcName)s - %(message)s'
-log.basicConfig(format=log_format, level=logging.DEBUG)
+logging.basicConfig(format=log_format, level=logging.DEBUG)
+log = logging.getLogger()
 
 discord_message_types = {'PING':1,
                          'APPLICATION_COMMAND':2,

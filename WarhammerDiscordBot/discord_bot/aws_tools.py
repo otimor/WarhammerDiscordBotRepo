@@ -11,9 +11,10 @@ def get_sns_topic_arn(parameter_name=None):
             return topic['TopicArn']
     return None
 
-def get_secret(secret_name='discord-app-public-key'):
+def get_secret(secret_name='WH_DISCORD_BOT_PUBLIC_KEY'):
     #TODO: write function to get the public key from AWS Secrets
     PUBLIC_KEY = '8327fc9706afcfc96f72c1c0010b13e6af4f6d1c3b61dfd48d867270501525ca'
+    #
     #client = boto3.client('secretsmanager')
     #response = client.get_secret_value(SecretId=secret_name)
     #secret = json.loads(response['SecretString'])
