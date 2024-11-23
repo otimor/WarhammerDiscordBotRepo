@@ -4,6 +4,7 @@ from auth import DiscordBotAuthorizer, check_auth
 from aws_tools import get_sns_topic_arn, get_secret
 import logging
 
+
 #log.basicConfig(level=log.DEBUG)
 log = logging.getLogger()
 log.setLevel("DEBUG")
@@ -80,11 +81,12 @@ def command_handler(body):
     if 'name' in body['data']:
         event_text = json.dumps(body, indent=2)
         log.debug(f"Command received: {body['data']['name']}")
-
+        # sns_topic_arn = get_sns_topic_arn()
+        sns_topic_arn = 'arn:aws:sns:us-west-2:205930619414:MainSNSTopicName'
         params = {
             'Message': event_text,
             'Subject': "Test SNS From Lambda",
-            'TopicArn': get_sns_topic_arn(),
+            'TopicArn': sns_topic_arn,
             'MessageAttributes': {
                 'command': {
                     'DataType': 'String',
