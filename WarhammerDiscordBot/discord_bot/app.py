@@ -7,7 +7,7 @@ import logging
 
 #log.basicConfig(level=log.DEBUG)
 log = logging.getLogger()
-log.setLevel("DEBUG")
+log.setLevel("DEBUG")d
 discord_message_types = {'PING':1,
                          'APPLICATION_COMMAND':2,
                          'MESSAGE_COMPONENT':3,
@@ -98,7 +98,7 @@ def command_handler(body):
         # Create promise and SNS service object
         sns = boto3.client('sns', api_version='2010-03-31')
         sns.publish(**params)
-
+        log.debug(f'SNS published. Returning response to Discord')
         return {
             'statusCode': 200,
             'body': json.dumps({

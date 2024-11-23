@@ -2,10 +2,15 @@ import json
 import requests
 import asyncio
 from warhammer_bot.commands import hello
-
+#from warhammer_bot import hello
 import logging as log
 
-log.basicConfig(level=log.DEBUG)
+import logging
+
+
+#log.basicConfig(level=log.DEBUG)
+log = logging.getLogger()
+log.setLevel("DEBUG")
 def send_message(WEBHOOK_ID, WEBHOOK_TOKEN, payload):
     headers = {'content-type': 'application/json'}
     url = f'https://discord.com/api/v10/webhooks/{WEBHOOK_ID}/{WEBHOOK_TOKEN}/messages/@original'
