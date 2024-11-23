@@ -79,7 +79,7 @@ def command_handler(body):
     # Handle command (send to SNS and split to one of Lambdas)
     if 'name' in body['data']:
         event_text = json.dumps(body, indent=2)
-        log.debug(f"Command received: {event_text}")
+        log.debug(f"Command received: {body['data']['name']}")
 
         params = {
             'Message': event_text,
