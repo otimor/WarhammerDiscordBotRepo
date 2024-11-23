@@ -3,11 +3,16 @@ import boto3
 from auth import DiscordBotAuthorizer, check_auth
 from aws_tools import get_sns_topic_arn, get_secret
 import logging
+import os
 
 
 #log.basicConfig(level=log.DEBUG)
 log = logging.getLogger()
-log.setLevel("DEBUG")d
+#log.setLevel("DEBUG")
+log_format = '%(asctime)s - %(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s'
+#log_format = '%(name)s - %(funcName)s - %(message)s'
+log.basicConfig(format=log_format, level=logging.DEBUG)
+
 discord_message_types = {'PING':1,
                          'APPLICATION_COMMAND':2,
                          'MESSAGE_COMPONENT':3,
@@ -77,12 +82,15 @@ def lambda_handler(event, context):
         raise
 
 def command_handler(body):
+    log_prefix = "command_handler:"
     # Handle command (send to SNS and split to one of Lambdas)
     if 'name' in body['data']:
         event_text = json.dumps(body, indent=2)
-        log.debug(f"Command received: {body['data']['name']}")
+        log.debug(f"{log_prefix} Command received: {body['data']['name']}")
         # sns_topic_arn = get_sns_topic_arn()
-        sns_topic_arn = 'arn:aws:sns:us-west-2:205930619414:MainSNSTopicName'
+        sns_topic_arn = os.environ.get('TOPIC_ARN')
+        log.debug(f"{log_prefix} Topic ARN: {sns_topic_arn}")
+        #sns_topic_arn = 'arn:aws:sns:us-west-2:205930619414:MainSNSTopicName'
         params = {
             'Message': event_text,
             'Subject': "Test SNS From Lambda",
@@ -94,11 +102,11 @@ def command_handler(body):
                 }
             }
         }
-        log.debug(f'Sending message to SNS: {params}')
+        log.debug(f'{log_prefix} Sending message to SNS: {params}')
         # Create promise and SNS service object
         sns = boto3.client('sns', api_version='2010-03-31')
         sns.publish(**params)
-        log.debug(f'SNS published. Returning response to Discord')
+        log.debug(f'{log_prefix} SNS published. Returning response to Discord')
         return {
             'statusCode': 200,
             'body': json.dumps({
