@@ -1,8 +1,8 @@
 import json
 import requests
 import asyncio
-from warhammer_bot.commands import hello
-#from warhammer_bot import hello
+#from warhammer_bot.commands import hello
+from warhammer_bot import hello
 import logging as log
 
 import logging
