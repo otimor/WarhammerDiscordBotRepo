@@ -38,8 +38,8 @@ Resources:
   proxyFunction:
     Type: AWS::Serverless::Function
     Properties:
-      #CodeUri: WarhammerDiscordBot/discord_bot/
-      CodeUri: WarhammerDiscordBot/hello_world/
+      CodeUri: WarhammerDiscordBot/discord_bot/
+      #CodeUri: WarhammerDiscordBot/hello_world/
       Runtime: python3.11
       Handler: app.lambda_handler
       Description: function to dispatch commands for WarhammerDiscordBot

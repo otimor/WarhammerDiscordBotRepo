@@ -1,6 +1,6 @@
 import json
 import boto3
-from auth import DiscordBotAuthorizer
+from auth import DiscordBotAuthorizer, check_auth
 from aws_tools import get_sns_topic_arn, get_secret
 import logging
 
@@ -13,15 +13,16 @@ discord_message_types = {'PING':1,
                          'MESSAGE':4,
                          'PONG':1}
 def build_response(status_code, body):
-    return {
+    headers = { 'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, GET'}
+    headers = ''
+    response = {
         'statusCode': status_code,
         'body': json.dumps(body),
-        'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST, GET'
-        }
+        'headers': headers
     }
+    return response
 
 basic_response = """{'headers': {
             'Access-Control-Allow-Headers': 'Content-Type',
@@ -49,10 +50,9 @@ def lambda_handler(event, context):
             timestamp = event['headers']['x-signature-timestamp']
             body = json.loads(event['body'])
             log.debug("Auth begin")
-            authorizer = DiscordBotAuthorizer(public_key)
-            authenticated, reason = authorizer.validate(signature=signature,
-                                                        timestamp=timestamp,
-                                                        body=event['body'])
+            #authorizer = DiscordBotAuthorizer(public_key)
+            #authenticated, reason = authorizer.validate(signature=signature, timestamp=timestamp, body=event['body'])
+            authenticated, reason = check_auth(public_key, signature, timestamp=timestamp, body=event['body'])
 
             log.debug(f"Auth end: results: {authenticated},{reason}")
 
@@ -60,18 +60,18 @@ def lambda_handler(event, context):
             log.error("Invalid request signature, missing headers")
             return build_response(401, 'DHBError: invalid request signature')
 
-            # handle the interaction
-            message_type = body['type']
-            log.debug(f"Processing message type: {message_type}")
-            if message_type == discord_message_types['PING']: #t == 1:
-                log.info("Received ping, responding with pong")
-                return build_response(200, "{'type': discord_message_types['PONG']}")
-            elif message_type == discord_message_types['APPLICATION_COMMAND']: #t == 2:
-                log.info("Processing command received")
-                return command_handler(body)
-            else:
-                log.error(f"Unhandled request type: {message_type}")
-                return build_response(400, 'DHBError: unhandled request type')
+        # handle the interaction
+        message_type = body['type']
+        log.debug(f"Processing message type: {message_type}")
+        if message_type == discord_message_types['PING']: #t == 1:
+            log.info("Received ping, responding with pong")
+            return build_response(200, "{'type': discord_message_types['PONG']}")
+        elif message_type == discord_message_types['APPLICATION_COMMAND']: #t == 2:
+            log.info("Processing command received")
+            return command_handler(body)
+        else:
+            log.error(f"Unhandled request type: {message_type}")
+            return build_response(400, 'DHBError: unhandled request type')
     except:
         raise
 
