@@ -2,7 +2,7 @@ import json
 import requests
 import asyncio
 #from warhammer_bot.commands import hello
-from warhammer_bot import hello, test
+import warhammer_bot
 import logging as log
 
 import logging
@@ -29,10 +29,11 @@ def command_handler(event, context):
     body = json.loads(str_body)
 
     try:# validate the interaction
-        command = body['data']['name']
+        command_name = body['data']['name']
         WEBHOOK_ID = body['application_id']
         WEBHOOK_TOKEN = body['token']
         log.info(f"Handling command: {command}")
+        command = getattr(warhammer_bot, command_name)
         payload = command()
         log.debug(f"webhook_id: {WEBHOOK_ID} webhook_token: {WEBHOOK_TOKEN[1:10]} Payload: {payload}")
         response = send_message(WEBHOOK_ID, WEBHOOK_TOKEN, payload)
