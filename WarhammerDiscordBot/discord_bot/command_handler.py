@@ -32,8 +32,9 @@ def command_handler(event, context):
         command_name = body['data']['name']
         WEBHOOK_ID = body['application_id']
         WEBHOOK_TOKEN = body['token']
-        log.info(f"Handling command: {command}")
+
         command = getattr(warhammer_bot, command_name)
+        log.info(f"Handling command:{command_name}: {command}")
         payload = command()
         log.debug(f"webhook_id: {WEBHOOK_ID} webhook_token: {WEBHOOK_TOKEN[1:10]} Payload: {payload}")
         response = send_message(WEBHOOK_ID, WEBHOOK_TOKEN, payload)
