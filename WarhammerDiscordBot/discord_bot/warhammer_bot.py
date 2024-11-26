@@ -3,12 +3,12 @@ import logging
 
 
 def hello():
-    return 'Hello, World from CodeCatalyst AWS hello',
+    return 'Hello, World from CodeCatalyst AWS hello'
 
 
 
 def test():
-    logging.debug("Generating test result command)
+    logging.debug("Generating test result command")
     return {
         'statusCode': 200,
         'headers': {'Content-Type': 'application/json'},
