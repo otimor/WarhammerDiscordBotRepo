@@ -105,7 +105,7 @@ def command_handler(body):
             }
         }
         log.debug(f'{log_prefix} Sending message to SNS: {params}')
-        # Create promise and SNS service object
+        #    Create promise and SNS service object
         sns = boto3.client('sns', api_version='2010-03-31')
         sns.publish(**params)
         log.debug(f'{log_prefix} SNS published. Returning response to Discord')

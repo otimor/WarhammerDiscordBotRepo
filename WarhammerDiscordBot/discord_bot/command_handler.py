@@ -14,8 +14,9 @@ log.setLevel("DEBUG")
 def send_message(WEBHOOK_ID, WEBHOOK_TOKEN, payload):
     headers = {'content-type': 'application/json'}
     url = f'https://discord.com/api/v10/webhooks/{WEBHOOK_ID}/{WEBHOOK_TOKEN}/messages/@original'
+    body = {"type": 1, "content": payload}
     log.info(f"Sending message to discord")
-    log.debug(f"Message details, URL: {url}, Payload: {payload}, Headers: {headers}")
+    log.debug(f"Message details, URL: {url}, body: {payload}, Headers: {headers}")
     response = requests.patch(url, data=json.dumps(payload), headers=headers)
     log.debug(
         f"Response from discord: {response.status_code} {response.reason} {response.text}"
@@ -31,22 +32,12 @@ def command_handler(event, context):
         command = body['data']['name']
         WEBHOOK_ID = body['application_id']
         WEBHOOK_TOKEN = body['token']
-    except KeyError:
-        return {
-            'statusCode': 400,
-            'body': json.dumps('invalid request')
-        }
-
-    try:
         log.info(f"Handling command: {command}")
         payload = command()
         log.debug(f"webhook_id: {WEBHOOK_ID} webhook_token: {WEBHOOK_TOKEN[1:10]} Payload: {payload}")
         response = send_message(WEBHOOK_ID, WEBHOOK_TOKEN, payload)
-        return response
+        log.info(f"Response from discord: {response.status_code} {response.reason} {response.text}")
+    except KeyError:
+        log.error("Missing command or webhook_id or webhook_token")
 
-    except:
-        return {
-            'statusCode': 400,
-            'body': json.dumps('unhandled command')
-        }
 
