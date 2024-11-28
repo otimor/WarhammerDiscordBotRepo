@@ -4,8 +4,7 @@ from auth import DiscordBotAuthorizer, check_auth
 from aws_tools import get_sns_topic_arn, get_secret, send_sns_message
 import logging
 import os
-
-
+import asyncio
 
 #log.basicConfig(level=log.DEBUG)
 
@@ -107,7 +106,7 @@ def command_handler(body):
         }
         log.debug(f'{log_prefix} Sending message to SNS: {params}')
         #    Create promise and SNS service object
-        send_sns_message(**params)
+        asyncio.run(send_sns_message(**params))
         log.debug(f'{log_prefix} SNS send to be published. Returning response to Discord')
         return {
             'statusCode': 200,

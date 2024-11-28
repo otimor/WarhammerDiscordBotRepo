@@ -2,8 +2,12 @@ import boto3
 import json
 import asyncio
 
+log = logging.getLogger()
+log.setLevel("DEBUG")
 async def send_sns_message(**params):
+    log.debug(f"creating sns client")
     sns = boto3.client('sns', api_version='2010-03-31')
+    log.debug(f"Sending SNS message: {params}")
     await sns.publish(**params)
 
 
