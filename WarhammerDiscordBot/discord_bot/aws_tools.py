@@ -1,5 +1,11 @@
 import boto3
 import json
+import asyncio
+
+async def send_sns_message(**params):
+    sns = boto3.client('sns', api_version='2010-03-31')
+    await sns.publish(**params)
+
 
 def get_sns_topic_arn(parameter_name=None):
     client = boto3.client('sns')

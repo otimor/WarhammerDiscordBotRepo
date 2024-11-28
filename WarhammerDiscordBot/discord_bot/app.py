@@ -1,9 +1,10 @@
 import json
 import boto3
 from auth import DiscordBotAuthorizer, check_auth
-from aws_tools import get_sns_topic_arn, get_secret
+from aws_tools import get_sns_topic_arn, get_secret, send_sns_message
 import logging
 import os
+
 
 
 #log.basicConfig(level=log.DEBUG)
@@ -106,9 +107,8 @@ def command_handler(body):
         }
         log.debug(f'{log_prefix} Sending message to SNS: {params}')
         #    Create promise and SNS service object
-        sns = boto3.client('sns', api_version='2010-03-31')
-        sns.publish(**params)
-        log.debug(f'{log_prefix} SNS published. Returning response to Discord')
+        send_sns_message(**params)
+        log.debug(f'{log_prefix} SNS send to be published. Returning response to Discord')
         return {
             'statusCode': 200,
             'body': json.dumps({
