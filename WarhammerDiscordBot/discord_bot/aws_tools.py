@@ -1,27 +1,33 @@
 #import boto3
 import json
 import asyncio
-import aiobotocore
+#import aiobotocore
 import logging
+from aiobotocore.session import get_session
 
 log = logging.getLogger()
 log.setLevel("DEBUG")
 async def send_sns_message(**params):
     log.debug(f"creating sns client")
-    sns = aiobotocore.client('sns', api_version='2010-03-31')
-    log.debug(f"Sending SNS message: {params}")
-    await sns.publish(**params)
+    session = get_session()
+    async with session.create_client('sns') as sns:
+        log.debug(f"Sending SNS message: {params}")
+        await sns.publish(**params)
+    #sns = boto3.client('sns', api_version='2010-03-31')
+    #sns.publish(**params)
 
 
 def get_sns_topic_arn(parameter_name=None):
-    client = aiobotocore.client('sns')
-    response = client.list_topics(NextToken='string')
-    if parameter_name is None:
-        return response['Topics'][0]['TopicArn']
-    for topic in response['Topics']:
-        if topic['TopicArn'].endswith(parameter_name):
-            return topic['TopicArn']
-    return None
+    session = get_session()
+    with session.create_client('sns') as client:
+    #client = boto3.client('sns')
+        response = client.list_topics(NextToken='string')
+        if parameter_name is None:
+            return response['Topics'][0]['TopicArn']
+        for topic in response['Topics']:
+            if topic['TopicArn'].endswith(parameter_name):
+                return topic['TopicArn']
+        return None
 
 def get_secret(secret_name='WH_DISCORD_BOT_PUBLIC_KEY'):
     #TODO: write function to get the public key from AWS Secrets
