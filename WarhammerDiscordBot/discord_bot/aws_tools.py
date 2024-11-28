@@ -1,19 +1,20 @@
-import boto3
+#import boto3
 import json
 import asyncio
+import aiobotocore
 import logging
 
 log = logging.getLogger()
 log.setLevel("DEBUG")
 async def send_sns_message(**params):
     log.debug(f"creating sns client")
-    sns = boto3.client('sns', api_version='2010-03-31')
+    sns = aiobotocore.client('sns', api_version='2010-03-31')
     log.debug(f"Sending SNS message: {params}")
     await sns.publish(**params)
 
 
 def get_sns_topic_arn(parameter_name=None):
-    client = boto3.client('sns')
+    client = aiobotocore.client('sns')
     response = client.list_topics(NextToken='string')
     if parameter_name is None:
         return response['Topics'][0]['TopicArn']

@@ -1,3 +1,4 @@
 requests
 pynacl
 boto3
+aiobotocore
