@@ -14,7 +14,7 @@ log.setLevel("DEBUG")
 def send_message(WEBHOOK_ID, WEBHOOK_TOKEN, payload):
     headers = {'content-type': 'application/json'}
     url = f'https://discord.com/api/v10/webhooks/{WEBHOOK_ID}/{WEBHOOK_TOKEN}/messages/@original'
-    body = {"type": 1, "content": payload}
+    body = {"type": 3, "content": payload}
     log.info(f"Sending message to discord")
     log.debug(f"Message details, URL: {url}, body: {payload}, Headers: {headers}")
     response = requests.patch(url, data=json.dumps(payload), headers=headers)
