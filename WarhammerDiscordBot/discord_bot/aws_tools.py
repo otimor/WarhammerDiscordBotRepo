@@ -1,6 +1,7 @@
 import boto3
 import json
 import asyncio
+import logging
 
 log = logging.getLogger()
 log.setLevel("DEBUG")
